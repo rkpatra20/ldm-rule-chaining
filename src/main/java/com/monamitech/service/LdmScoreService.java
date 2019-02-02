@@ -22,7 +22,12 @@ public class LdmScoreService {
 	}
 
 	private Map<String, Object> evaluateDefault() {
-		return null;
+		Map<String, Object> map = getMap();
+		Map<String, String> outputMap = (Map<String, String>) map.get("output");
+		outputMap.put("score", "41");
+		outputMap.put("maxScore", "100");
+		
+		return map;
 	}
 
 	private Map<String, Object> evaluateP4() {
@@ -56,7 +61,7 @@ public class LdmScoreService {
 	private Map<String, Object> evaluateP1() {
 		Map<String, Object> map = getMap();
 		Map<String, String> outputMap = (Map<String, String>) map.get("output");
-		outputMap.put("score", "11");
+		outputMap.put("score", "41");
 		outputMap.put("maxScore", "100");
 		
 		return map;

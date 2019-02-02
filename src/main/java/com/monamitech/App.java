@@ -18,7 +18,7 @@ public class App {
 		System.out.println("loaded");
 
 		Map<String, String> input = new HashMap<>();
-		input.put("product", "p1");
+		input.put("product", "p9");
 
 		String result = manager.getLdmChainScore(input);
 

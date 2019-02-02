@@ -43,7 +43,7 @@ public class LdmRuleChainManager {
 	}
 
 	public String getLdmChainScore(Map<String, String> input) throws JsonProcessingException {
-	     return mapper.writeValueAsString(evaluateLdmChainScore(input));
+		return mapper.writeValueAsString(evaluateLdmChainScore(input));
 	}
 
 	public Map<String, Object> evaluateLdmChainScore(Map<String, String> input) {
@@ -55,8 +55,8 @@ public class LdmRuleChainManager {
 
 		Set<String> productsEvaluated = new HashSet<>();
 		while (true) {
-			String product=input.get("product");
-			System.out.println("evaluting product: "+product);
+			String product = input.get("product");
+			System.out.println("evaluting product: " + product);
 			Map<String, Object> productScore = ldmScoreService.evaluateScore(input);
 			productsEvaluated.add(product);
 			Double[] scores = getActualScore_MaxScoreSum(productScore);
@@ -64,6 +64,17 @@ public class LdmRuleChainManager {
 			sum_maxScoreSum = sum_maxScoreSum + scores[1];
 
 			RuleChainTuple ruleChainTuple = getRuleChainTuple(product, scores[0]);
+			if(ruleChainTuple==null)
+			{
+				scoresByProduct.put(product, productScore);
+				scoresByProduct.put(product, productScore);
+				scoresByProduct.put("sum_actualScore", sum_actualScore);
+				scoresByProduct.put("sum_maxScoreSum", sum_maxScoreSum);
+				scoresByProduct.put("action", "NA");
+				break;
+				
+			}
+			
 			if (ruleChainTuple.getActionType().equals(RuleChainTupleActionType.PRODUCT.name())) {
 				scoresByProduct.put(product, productScore);
 				product = ruleChainTuple.getAction();
@@ -92,12 +103,14 @@ public class LdmRuleChainManager {
 
 	private RuleChainTuple getRuleChainTuple(String product, Double score) {
 		List<RuleChainTuple> ruleChainTuples = ruleChainTuplesMap.get(product);
+		if (ruleChainTuples == null)
+			return null;
 		for (RuleChainTuple chainTuple : ruleChainTuples) {
 			if (score >= chainTuple.getMinValue() && score <= chainTuple.getMaxValue()) {
 				return chainTuple;
 			}
 		}
-		throw new RuntimeException("no rule_chain_tuple_found for score: "+score+" and product: "+product);
+		throw new RuntimeException("no rule_chain_tuple_found for score: " + score + " and product: " + product);
 	}
 
 	private Double[] getActualScore_MaxScoreSum(Map<String, Object> productScore) {
